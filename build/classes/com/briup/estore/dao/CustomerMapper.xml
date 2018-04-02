@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.estore.dao.ICustomerDao">
+	<sql id="selCusinfo">
+	  select id,name,password,zip,address,telephone,email from tbl_customer where name =#{param1}
+	</sql>
+	<!-- 顾客的信息映射 -->
+	<resultMap type="com.briup.estore.bean.Customer" id="mapCustomer">
+	   <id column="id" property="id"></id>
+	   <result column="name" property="name"/>
+	   <result column="password" property="password"/>
+	   <result column="zip" property="zip"/>
+	   <result column="address" property="address"/>
+	   <result column="telephone" property="telephone"/>
+	   <result column="email" property="email"/>
+	</resultMap>
+<!-- 	订单的信息映射  -->
+	 <resultMap type="com.briup.estore.bean.Order" id="mapOrder">
+	    <id column="id" property="id"></id>
+	   <result column="cost" property="cost"/>
+	   <result column="orderDate" property="orderDate"/>
+	 </resultMap>
+	 
+	<!--  顾客和订单一对多映射 -->
+	  <resultMap type="com.briup.estore.bean.Customer" id="CustAndOrder" extends="mapCustomer">
+	   <collection property="orders" column="id" select="findCustomer"></collection>
+	  </resultMap>
+	<!--   查询 -->
+	 <select id="findByName" resultMap="mapCustomer" >
+	     <include refid="selCusinfo"></include>
+	 </select>
+	 <select id="findOrderBuCusId" resultMap="mapOrder">
+	    select id,cost,orderDate from tbl_order where customer_id=#{id}
+	 </select>
+	 
+	 <insert id="saveCustomer" parameterType="com.briup.estore.bean.Customer">
+	 <selectKey keyColumn="id" keyProperty="id" order="BEFORE" resultType="long">
+	    select  my_seq.nextval from dual
+	 </selectKey>
+	   insert into tbl_customer(id,name,password,zip,address,telephone,email) 
+	   values(#{id},#{name},#{password},#{zip},#{address},#{telephone},#{email})
+	 </insert>
+	 
+	<!-- 修改客户信息 --> 
+	 <update id="updateCustomer" parameterType="com.briup.estore.bean.Customer">
+	 update tbl_customer
+	    <set>
+	       <if test="password!=null">password=#{password},</if>
+	       <if test="zip!=null">zip=#{zip},</if>
+	       <if test="address!=null">address=#{address},</if>
+	       <if test="telephone!=null">telephone=#{telephone},</if>
+	      <if test="email!=null">email=#{email}</if>
+	    </set>
+	    where name=#{name}
+	 </update>
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+</mapper>			

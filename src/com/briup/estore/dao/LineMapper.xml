@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.briup.estore.dao.ILineDao">
+
+<resultMap type="com.briup.estore.bean.Book" id="bookMap">
+		<id column="bid" property="id" />
+		<result column="bname" property="name" />
+		<result column="bprice" property="price" />
+	</resultMap>
+	
+	<resultMap type="com.briup.estore.bean.Line" id="lineWithBook">
+		<id column="lid" property="id" />
+		<result column="lnum" property="num" />
+
+		<collection property="book" resultMap="bookMap"></collection>
+		<!-- <association property="order" resultMap=""></association> -->
+	</resultMap>
+	
+    <select id="findByLineId" parameterType="long" resultMap="lineWithBook">
+		select line.id lid,line.num lnum,book.id bid,book.name bname,book.price bprice from
+		tbl_line line,tbl_book book
+		where line.book_id=book.id and line.order_id=#{order_id}
+	</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<delete id="deleteLineByOrderId" parameterType="long">
+   delete from tbl_line where order_id=#{param1}
+</delete>
+	<insert id="savaLine" parameterType="com.briup.estore.bean.Line" >
+		<selectKey keyColumn="id" keyProperty="id" order="BEFORE" resultType="long">
+	   select my_seq.nextval from dual
+	</selectKey>
+	  insert into tbl_line(id,num,order_id,book_id)
+	  values(#{id},#{num},#{order.id},#{book.id})
+	</insert>
+</mapper>			
